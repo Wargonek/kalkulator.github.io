@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Adresów IPv4</title>
+    <link rel="stylesheet" type="text/css" href="stylegowna.css">
+    <link rel="icon" type="image/x-icon" href="iconv2.png">
+</head>
+<body>
+    <div class="calosc">
+        <div class="naglowek glass">
+            
+    
+            <span id="nazwa">Kalkulator IPv4</span>
+
+
+        </div>
+        <div class="conteiner">
+            <div class="info glass">
+                <h2>Instrukcja</h2>
+                <p class="instrukcja">Witamy na naszym kalkulatorze IPv4. Po wpisaniu adresu oraz wskaźaniu maski IP nasza strona oblicza adres sieci, adres rozgłoszeniowy (brodcast), 
+                  największy/najmniejszy adres w sieci  oraz liczbę podsieci. Jeśli chcesz dowiedzieć ile wynosi liczba podsieci oraz liczba adresów IP dla urządzeń to dobrze trafiłeś! 
+                  <!-- <a class="linky" target="_blank" href="Podsieci_i_liczba_adresow_IP.html">Podsieci i liczba adresów IP </a> -->
+
+                </p>
+                <br>
+                <p> Made by: <br><a class="autorzy" href="https://github.com/P1STONer">@P1ST0N </a><br><a class="autorzy" href="https://github.com/Wargonek">@Wag0n </a></p>
+              <p></strong><a target="_blank" href="https://www.buymeacoffee.com/p1stonwagon">Wesprzyj Nas </a></p>
+            </div>
+            <div class="main glass">
+               <br><br><br> 
+ 
+                <label class="lable" for="ipAddress">Adres IP:</label>
+                <input type="" maxlength="15" id="ipAddress" placeholder=" 192.168.1.1" required>
+              
+                <label class="lable" for="subnetMask">Maska sieci:</label>
+                <input type="text" id="subnetMask" maxlength="15"  placeholder=" 255.255.255.0" required>
+                <br>    <br>
+                <button class="button-38" onclick="calculate()">OBLICZ</button>
+              
+                <div id="result"></div>
+              
+                <script>
+                  function calculate() {
+                    const ipAddress = document.getElementById('ipAddress').value;
+                    const subnetMask = document.getElementById('subnetMask').value;
+              
+                    const ipArray = ipAddress.split('.').map(Number);
+                    const subnetArray = subnetMask.split('.').map(Number);
+              
+                    // Calculate network address
+                    const networkAddress = ipArray.map((octet, index) => octet & subnetArray[index]).join('.');
+              
+                    // Calculate broadcast address
+                    const invertedSubnet = subnetArray.map(octet => 255 - octet);
+                    const broadcastAddress = ipArray.map((octet, index) => (octet | invertedSubnet[index])).join('.');
+              
+                    // Calculate host range
+                    const minHost = networkAddress.slice(0, networkAddress.lastIndexOf('.')) + '.1';
+                    const maxHost = broadcastAddress.slice(0, broadcastAddress.lastIndexOf('.')) + '.254';
+              
+                    // Calculate the number of subnets  CHUJA TO DZIAŁA ;/
+                    //const numberOfSubnets = Math.pow(2, 32 - subnetArray.reduce((acc, octet) => acc + octet.toString(2).split('1').length - 1, 0));
+                    // const numberOfSubnets = Math.pow(2, 32 - subnetArray.reduce((acc, octet) => acc + octet.toString(2).replace(/0/g, '').length, 0));
+
+                    // Calculate the number of hosts
+                    const numberOfHosts = Math.pow(2, 32 - subnetArray.reduce((acc, octet) => acc + octet.toString(2).split('1').length - 1, 0)) - 2;
+              
+                    // Display the result
+                    const resultElement = document.getElementById('result');
+                    resultElement.innerHTML = `
+                      <p><strong>Adres sieci:</strong> ${networkAddress}</p>
+                      <p><strong>Adres Brodcast:</strong> ${broadcastAddress}</p>
+                      <p><strong>Najmniejszy host:</strong> ${minHost}</p>
+                      <p><strong>Ostatni host:</strong> ${maxHost}</p>
+                      <p><strong>Maksymalna liczba hostów:</strong> ${numberOfHosts}</p>
+                      <p><strong>Tabela Podsieci: </strong><a target="_blank" href="Podsieci_i_liczba_adresow_IP.html">Podsieci i liczba adresów IP </a></p>
+                    `;
+                  }
+                </script>
+            </div>
+        </div>
+    </div>    
+</body>
+</html>
